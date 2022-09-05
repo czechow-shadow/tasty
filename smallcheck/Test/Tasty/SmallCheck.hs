@@ -19,9 +19,10 @@ import Data.Typeable
 import Data.IORef
 import Options.Applicative (metavar)
 import Text.Printf
+import Data.CallStack (HasCallStack)
 
 -- | Create a 'Test' for a SmallCheck 'SC.Testable' property
-testProperty :: SC.Testable IO a => TestName -> a -> TestTree
+testProperty :: (HasCallStack, SC.Testable IO a) => TestName -> a -> TestTree
 testProperty name prop = singleTest name $ (SC.test prop :: SC.Property IO)
 
 -- | The \"depth\" parameter for SmallCheck
