@@ -77,13 +77,13 @@ import Data.CallStack (HasCallStack)
 #endif
 
 -- | Turn an 'Assertion' into a tasty test case
-testCase :: TestName -> Assertion -> TestTree
+testCase :: HasCallStack => TestName -> Assertion -> TestTree
 testCase name = singleTest name . TestCase . (fmap (const ""))
 
 -- | Like 'testCase', except in case the test succeeds, the returned string
 -- will be shown as the description. If the empty string is returned, it
 -- will be ignored.
-testCaseInfo :: TestName -> IO String -> TestTree
+testCaseInfo :: HasCallStack => TestName -> IO String -> TestTree
 testCaseInfo name = singleTest name . TestCase
 
 -- IO String is a computation that throws an exception upon failure or

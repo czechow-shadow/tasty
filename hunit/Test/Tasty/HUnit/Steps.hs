@@ -11,6 +11,7 @@ import Test.Tasty.HUnit.Orig
 import Test.Tasty.Providers
 import Test.Tasty.Runners (getTime)
 import Text.Printf (printf)
+import Data.CallStack (HasCallStack)
 
 newtype TestCaseSteps = TestCaseSteps ((String -> IO ()) -> Assertion)
   deriving Typeable
@@ -104,5 +105,5 @@ instance IsTest TestCaseSteps where
 -- a failed test, we know that all /displayed/ steps but the last one were
 -- successful, and the last one failed. The steps /after/ the failed one
 -- are /not displayed/, since they didn't run.
-testCaseSteps :: TestName -> ((String -> IO ()) -> Assertion) -> TestTree
+testCaseSteps :: HasCallStack => TestName -> ((String -> IO ()) -> Assertion) -> TestTree
 testCaseSteps name = singleTest name . TestCaseSteps
