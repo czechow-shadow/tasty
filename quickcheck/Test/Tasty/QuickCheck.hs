@@ -57,12 +57,13 @@ import System.Random (getStdRandom, randomR)
 import Control.Applicative
 import Data.Monoid
 #endif
+import Data.CallStack (HasCallStack)
 
 newtype QC = QC QC.Property
   deriving Typeable
 
 -- | Create a 'Test' for a QuickCheck 'QC.Testable' property
-testProperty :: QC.Testable a => TestName -> a -> TestTree
+testProperty :: (HasCallStack, QC.Testable a) => TestName -> a -> TestTree
 testProperty name prop = singleTest name $ QC $ QC.property prop
 
 -- | Create a test from a list of QuickCheck properties. To be used
@@ -70,7 +71,7 @@ testProperty name prop = singleTest name $ QC $ QC.property prop
 --
 -- >tests :: TestTree
 -- >tests = testProperties "Foo" $allProperties
-testProperties :: TestName -> [(String, Property)] -> TestTree
+testProperties :: HasCallStack => TestName -> [(String, Property)] -> TestTree
 testProperties name = testGroup name . map (uncurry testProperty)
 
 -- | Number of test cases for QuickCheck to generate
