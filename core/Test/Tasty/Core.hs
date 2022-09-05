@@ -160,6 +160,9 @@ class Typeable t => IsTest t where
 -- | The name of a test or a group of tests
 type TestName = String
 
+-- | The path of the test file that invokes a given test
+type TestFile = FilePath
+
 -- | 'ResourceSpec' describes how to acquire a resource (the first field)
 -- and how to release it (the second field).
 data ResourceSpec a = ResourceSpec (IO a) (a -> IO ())
@@ -208,7 +211,7 @@ data DependencyType
 --
 -- Groups can be created using 'testGroup'.
 data TestTree
-  = forall t . IsTest t => SingleTest TestName t
+  = forall t . IsTest t => SingleTest TestName TestFile t
     -- ^ A single test of some particular type
   | TestGroup TestName [TestTree]
     -- ^ Assemble a number of tests into a cohesive group
@@ -309,7 +312,7 @@ after deptype s =
 -- instead. This way your code won't break when new nodes/fields are
 -- indroduced.
 data TreeFold b = TreeFold
-  { foldSingle :: forall t . IsTest t => OptionSet -> TestName -> t -> b
+  { foldSingle :: forall t . IsTest t => OptionSet -> TestName -> TestFile -> t -> b
   , foldGroup :: OptionSet -> TestName -> b -> b
   , foldResource :: forall a . OptionSet -> ResourceSpec a -> (IO a -> b) -> b
   , foldAfter :: OptionSet -> DependencyType -> Expr -> b -> b
@@ -367,9 +370,9 @@ foldTestTree (TreeFold fTest fGroup fResource fAfter) opts0 tree0 =
     go :: (Seq.Seq TestName -> OptionSet -> TestTree -> b)
     go path opts tree1 =
       case tree1 of
-        SingleTest name test
+        SingleTest name testFile test
           | testPatternMatches pat (path Seq.|> name)
-            -> fTest opts name test
+            -> fTest opts name testFile test
           | otherwise -> mempty
         TestGroup name trees ->
           fGroup opts name $ foldMap (go (path Seq.|> name) opts) trees
@@ -388,7 +391,7 @@ treeOptions =
   Map.elems .
 
   foldTestTree
-    trivialFold { foldSingle = \_ _ -> getTestOptions }
+    trivialFold { foldSingle = \_ _ _ -> getTestOptions }
     mempty
 
   where

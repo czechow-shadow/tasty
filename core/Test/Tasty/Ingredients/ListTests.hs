@@ -3,6 +3,7 @@
 module Test.Tasty.Ingredients.ListTests
   ( ListTests(..)
   , testsNames
+  , testsNamesAndFiles
   , listingTests
   ) where
 
@@ -27,12 +28,17 @@ instance IsOption ListTests where
 
 -- | Obtain the list of all tests in the suite
 testsNames :: OptionSet -> TestTree -> [TestName]
-testsNames {- opts -} {- tree -} =
+testsNames opts tree = map snd $ testsNamesAndFiles opts tree
+
+testsNamesAndFiles :: OptionSet -> TestTree -> [(TestName, TestFile)]
+testsNamesAndFiles {- opts -} {- tree -} =
   foldTestTree
     trivialFold
-      { foldSingle = \_opts name _test -> [name]
-      , foldGroup = \_opts groupName names -> map ((groupName ++ ".") ++) names
+      { foldSingle = \_opts name file _test -> [(name, file)]
+      , foldGroup = \_opts groupName names ->
+                      map (first ((groupName ++ ".") ++)) names
       }
+  where first f (x, y) = (f x, y)
 
 -- | The ingredient that provides the test listing functionality
 listingTests :: Ingredient

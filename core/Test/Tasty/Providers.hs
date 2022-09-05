@@ -12,12 +12,18 @@ module Test.Tasty.Providers
   )
   where
 
+import GHC.Stack
+
 import Test.Tasty.Core
 import Test.Tasty.Providers.ConsoleFormat (ResultDetailsPrinter, noResultDetails)
 
 -- | Convert a test to a leaf of the 'TestTree'
-singleTest :: IsTest t => TestName -> t -> TestTree
-singleTest = SingleTest
+singleTest :: (HasCallStack, IsTest t) => TestName -> t -> TestTree
+singleTest name t = SingleTest name testFile t
+  where
+    testFile = case reverse $ getCallStack callStack of
+      ((_, s):_) -> srcLocFile s
+      _ -> error "Unable to detect call site (missing HasCallStack constraint?)"
 
 -- | 'Result' of a passed test
 testPassed

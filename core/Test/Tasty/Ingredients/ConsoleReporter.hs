@@ -118,8 +118,8 @@ buildTestOutput opts tree =
 
     runSingleTest
       :: (IsTest t, ?colors :: Bool)
-      => OptionSet -> TestName -> t -> Ap (Reader Level) TestOutput
-    runSingleTest _opts name _test = Ap $ do
+      => OptionSet -> TestName -> TestFile -> t -> Ap (Reader Level) TestOutput
+    runSingleTest _opts name _testFile _test = Ap $ do
       level <- ask
 
       let
@@ -657,7 +657,7 @@ computeAlignment opts =
   fromMonoid .
   foldTestTree
     trivialFold
-      { foldSingle = \_ name _ level -> Maximum (stringWidth name + level)
+      { foldSingle = \_ name _ _ level -> Maximum (stringWidth name + level)
       , foldGroup = \_opts _ m -> m . (+ indentSize)
       }
     opts

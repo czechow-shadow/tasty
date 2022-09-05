@@ -2,7 +2,9 @@
 --  see http://haskell.org/cabal/users-guide/
 
 name:                tasty
-version:             1.4.2.1
+-- Note: Append ".0" to the version number forked off from
+--       to have unique package versions
+version:             1.4.2.1.0
 synopsis:            Modern and extensible testing framework
 description:         Tasty is a modern testing framework for Haskell.
                      It lets you combine your unit tests, golden

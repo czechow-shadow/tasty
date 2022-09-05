@@ -259,8 +259,8 @@ createTestActions opts0 tree = do
     Nothing -> throwIO DependencyLoop
 
   where
-    runSingleTest :: IsTest t => OptionSet -> TestName -> t -> Tr
-    runSingleTest opts name test = Traversal $ do
+    runSingleTest :: IsTest t => OptionSet -> TestName -> TestFile -> t -> Tr
+    runSingleTest opts name _testFile test = Traversal $ do
       statusVar <- liftIO $ atomically $ newTVar NotStarted
       (parentPath, deps) <- ask
       let

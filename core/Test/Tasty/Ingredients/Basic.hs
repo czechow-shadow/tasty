@@ -14,6 +14,7 @@ module Test.Tasty.Ingredients.Basic
   , listingTests
   , ListTests(..)
   , testsNames
+  , testsNamesAndFiles
     -- ** Adding options
   , includingOptions
   )
